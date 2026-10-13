@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Polish, accessibility, and production readiness. Update CSS to full WattWise design, add accessible text summaries to all charts, ensure no console warnings in production build, clean up any remaining .jsx stub files, verify all routes work end-to-end, ensure existing TariffCompare functionality (CalculatorPage using tariffEngine.js and demoTariffs) is preserved alongside new WattWise functionality, and do a final build + test verification. Depends on FEAT-001 through FEAT-004 all being complete.",
+  "status": "pending",
+  "steps": [
+    "Audit src/styles.css: ensure all WattWise color tokens are in :root (--color-navy: #0A1628, --color-electric-blue: #1E40AF, --color-cyan: #06B6D4, --color-green: #10B981, --color-amber: #F59E0B, --color-red: #EF4444). Ensure .ww-card, .ww-badge, .ww-fingerprint-*, .ww-risk-*, .ww-shift-* utility classes exist. Update --color-primary to #1E40AF and --color-accent to #10B981 to align with WattWise palette. Add print styles that hide navigation and show all comparison data.",
+    "Add accessible text summaries (<p className='visually-hidden'>) to all Recharts chart containers. Each chart must have a descriptive aria-label on its container div and a sibling <table> (visually hidden with CSS .visually-hidden) summarising the chart data as text. This applies to: BillBreakdownTable chart, FingerprintCard pie/bar chart, BreakEvenCard line chart, RiskSummaryCard scenario chart, ShiftCard scenario chart, SavingsCard bar chart.",
+    "Audit all pages for console warnings: fix any prop-types warnings by ensuring all component props are typed via TypeScript interfaces (no PropTypes needed since we're using TypeScript). Fix any key prop warnings in lists. Fix any missing aria attributes. Remove any console.log statements from production code paths.",
+    "Ensure the existing TariffCompare routes (/calculator with state/DISCOM cascade) remain functional. The existing src/lib/tariffEngine.js, src/lib/demoTariffs.js, src/data/tariffCatalogue.js, src/data/discoms.js, src/data/indiaRegions.js, and src/lib/seedData.js must remain importable and working. The new App.tsx routes to /calculator which is the WattWise consumption input form. Verify the old CalculatorPage functionality (DISCOM cascade) is either preserved at a sub-route or integrated. Decision: the new /calculator is the WattWise consumption form; the old DISCOM-cascade calculator is removed since WattWise replaces it. Remove dead imports from old pages if any.",
+    "Clean up any remaining .jsx and .js files in src/ that have been superseded by .tsx/.ts equivalents. The files to remove after migration: src/App.jsx, src/main.jsx, src/components/AuthPanel.jsx, src/components/Layout.jsx, src/components/PlanEditor.jsx, src/components/RequireAdmin.jsx, src/components/SavingsSummary.jsx, src/components/UsageForm.jsx, src/components/PeakUsageDemo.jsx, src/pages/HomePage.jsx, src/pages/CalculatorPage.jsx, src/pages/ComparePage.jsx, src/pages/ResultsPage.jsx, src/pages/AdminLoginPage.jsx, src/pages/AdminDashboardPage.jsx. Do NOT remove: src/lib/tariffEngine.js, src/lib/demoTariffs.js, src/lib/auth.js, src/lib/lang.jsx, src/lib/seedData.js, src/data/samplePlans.js, src/data/discoms.js, src/data/indiaRegions.js, src/data/tariffCatalogue.js, src/utils/calculateBill.js, src/utils/comparePlans.js, src/utils/formatRupees.js (these are still referenced by existing passing tests).",
+    "Final build verification: run `npm run build` and confirm: (a) no TypeScript errors, (b) no chunk-size warnings from WattWise-specific code (only recharts/firebase vendor chunks may be large), (c) dist/index.html exists.",
+    "Final test verification: run `npm run test` and confirm all tests pass including the original 96 tests (calculateBill, comparePlans, tariffEngine, catalogue, App) and all new WattWise tests (billingEngine, digitalTwin, breakEven, riskShield, regretGuard, shiftAdvisor, auth, firestore). Total should be 130+ tests passing.",
+    "Update the FEAT-005 status to completed and record the final test count and build output in findings."
+  ],
+  "acceptance_criteria": [
+    "npm run test — all tests pass (96 original + 40+ new)",
+    "npm run build — succeeds with no TypeScript errors",
+    "No .jsx files remain in src/pages/ or src/components/ (except src/lib/lang.jsx which is kept)",
+    "All Recharts charts have aria-label attributes and visually-hidden accessible text summaries",
+    "No console.log, console.warn, or console.error calls in production code paths (only in development guards like import.meta.env.DEV blocks)",
+    "LandingPage renders at / with WattWise branding",
+    "The route /comparison shows the correct recommended plan for both DEMO_PROFILES",
+    "The route /digital-twin shows the fingerprint label",
+    "The route /risk-shield shows 25 scenarios",
+    "The route /shift-advisor shows 3 shift scenarios",
+    "Navigating to /saved without auth redirects to /login?redirect=/saved"
+  ],
+  "verification": [
+    "npm run test — all tests pass",
+    "npm run build — succeeds"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

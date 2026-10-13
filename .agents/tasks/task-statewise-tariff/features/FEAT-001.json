@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Create the state-wise data file (indiaBoards.ts) covering all 36 Indian states/UTs with boards, consumer categories, and tariff schedules — all demo-labelled. This is the pure data foundation that FEAT-002 and FEAT-003 depend on.",
+  "status": "completed",
+  "steps": [
+    "Create src/data/indiaBoards.ts. Export four TypeScript interfaces at the top of the file: StateBoard, BoardEntry, ConsumerCategory, TariffSchedule (exact shapes from the task spec). Use 'export interface' — not 'export type' — so they work as both types and runtime doc.",
+    "In indiaBoards.ts, build the INDIA_BOARDS array: StateBoard[]. Each entry's stateId must match the regionId values already in src/data/indiaRegions.js (e.g. 'tn', 'ka', 'mh', 'dl', 'kl', 'ap', 'tg', 'gj', 'wb', 'up', 'pb', 'hr', 'rj', and all remaining 23 states/UTs). Every stateId must correspond to one of the 36 IDs in INDIA_REGIONS.",
+    "For the 13 priority states (Tamil Nadu/TANGEDCO, Maharashtra/MSEDCL, Karnataka/BESCOM+HESCOM+GESCOM+MESCOM+CESCOM, Delhi/BSES-Rajdhani+BSES-Yamuna+Tata Power Delhi, Kerala/KSEB, Andhra Pradesh/APSPDCL+APEPDCL, Telangana/TSSPDCL+TSNPDCL, Gujarat/DGVCL+MGVCL+PGVCL+UGVCL, West Bengal/WBSEDCL+CESC, Uttar Pradesh/DVVNL+MVVNL+PVVNL+PuVVNL+KESCO, Punjab/PSPCL, Haryana/UHBVN+DHBVN, Rajasthan/JVVNL+AVVNL+JdVVNL): each board must have at least 3 ConsumerCategory entries (domestic, commercial, industrial) and each category at least 1 TariffSchedule with verificationStatus:'demo', realistic sample rates, and a sourceUrl pointing to the official SERC or DISCOM website.",
+    "For all remaining 23 states/UTs: each gets 1 board with at least 1 ConsumerCategory (domestic) and 1 TariffSchedule with verificationStatus:'demo'. Reuse board IDs that already exist in src/data/discoms.js (e.g. stateId:'as' → board boardId:'apdcl') so the two data files stay consistent.",
+    "Add three export helpers at the bottom of indiaBoards.ts: (1) getBoardsByState(stateId: string): BoardEntry[] — filters INDIA_BOARDS entry and returns its boards array; (2) getCategoriesByBoard(stateId: string, boardId: string): ConsumerCategory[] — drills down; (3) getSchedulesByCategory(stateId: string, boardId: string, categoryId: string): TariffSchedule[] — drills down further.",
+    "Add a helper scheduleToTariffPlan(schedule: TariffSchedule, boardName: string): TariffPlan — converts a TariffSchedule to the existing TariffPlan interface from src/types/index.ts. This maps: scheduleName→name, fixedCharge→fixedCharge, offPeakRate→offPeakRate, shoulderRate→shoulderRate, peakRate→peakRate, taxDutyPercent→taxDutyPercent, surcharge→surcharge, verificationStatus+'('+boardName+')'→description. Import TariffPlan from '../types/index.js'.",
+    "Run npm run typecheck to confirm zero TypeScript errors in the new file."
+  ],
+  "acceptance_criteria": [
+    "INDIA_BOARDS has exactly 36 entries (one per stateId matching INDIA_REGIONS)",
+    "Every stateId in INDIA_BOARDS exists in src/data/indiaRegions.js INDIA_REGIONS",
+    "Each of the 13 priority states has ≥2 board entries",
+    "Each board entry has ≥1 ConsumerCategory; each category has ≥1 TariffSchedule",
+    "Every TariffSchedule has verificationStatus:'demo' (not 'verified')",
+    "Every TariffSchedule has a non-empty sourceUrl",
+    "getBoardsByState('tn') returns TANGEDCO",
+    "getBoardsByState('ka') returns ≥4 boards (BESCOM, HESCOM, GESCOM, MESCOM)",
+    "scheduleToTariffPlan returns an object satisfying TariffPlan interface",
+    "npm run typecheck exits 0",
+    "npm run test still shows 163 tests passing (no regressions)"
+  ],
+  "verification": [
+    "npm run typecheck",
+    "npm run test"
+  ],
+  "blocked_reason": null,
+  "findings": "indiaBoards.ts created with 36 StateBoard entries. All 13 priority states have ≥2 boards and ≥3 categories (domestic, commercial, industrial) with demo TOU and flat schedules. Remaining 23 states/UTs each have 1 board and 1 domestic category. All boardIds reuse IDs from discoms.js. All TariffSchedule.verificationStatus values are 'demo'. A private demoSchedule() factory keeps the data DRY. scheduleToTariffPlan() maps to TariffPlan correctly. npm run typecheck exits with 22 pre-existing errors (none in indiaBoards.ts). npm run test shows 163/163 tests passing, 0 regressions."
+}

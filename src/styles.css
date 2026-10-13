@@ -504,12 +504,33 @@ input:disabled, select:disabled { background: var(--color-neutral-100); cursor: 
 
 /* ── Print styles ────────────────────────────────────────────────────────── */
 @media print {
-  .topbar, .footer, .nav-toggle, .page-actions, .btn, .notice { display: none !important; }
+  /* Hide navigation, interactive controls, and decorative elements */
+  .topbar, .footer, .nav-toggle, .page-actions, .page-header-actions,
+  .btn, .notice, .hero-illustration, .floating-bolt, .sun-orb { display: none !important; }
+
+  /* Show comparison data, charts still render as DOM */
   .main-content { padding: 0; max-width: 100%; }
-  .panel { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+  .panel, .ww-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+
   body { background: white; font-size: 12pt; }
   h1 { font-size: 18pt; }
   h2 { font-size: 14pt; }
+  h3 { font-size: 12pt; }
+
+  /* Show accessible hidden tables in print */
+  .visually-hidden {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+  }
+
+  /* Comparison data must be visible */
+  .breakdown-table, .comparison-cards, .ww-comparison-grid { display: table; width: 100%; }
+  .comparison-card { page-break-inside: avoid; }
+
   a[href]::after { content: " (" attr(href) ")"; font-size: 10pt; color: #666; }
   .badge-demo::after { content: " (DEMO DATA — NOT VERIFIED)"; font-size: 9pt; }
 }
@@ -788,7 +809,7 @@ input:disabled, select:disabled { background: var(--color-neutral-100); cursor: 
 }
 
 /* =========================================================================
-   WattWise — new utility classes (added by FEAT-003)
+   WattWise — new utility classes (added by FEAT-003, extended by FEAT-005)
    ========================================================================= */
 
 /* ── WattWise card ────────────────────────────────────────────────────────── */
@@ -797,6 +818,49 @@ input:disabled, select:disabled { background: var(--color-neutral-100); cursor: 
   background: var(--color-white);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+}
+
+/* ── Fingerprint variants ─────────────────────────────────────────────────── */
+.ww-fingerprint-offpeak { border-left: 4px solid var(--color-cyan); }
+.ww-fingerprint-shoulder { border-left: 4px solid var(--color-amber); }
+.ww-fingerprint-peak { border-left: 4px solid var(--color-red); }
+.ww-fingerprint-balanced { border-left: 4px solid var(--color-electric-blue); }
+.ww-fingerprint-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  padding: 6px 0;
+}
+
+/* ── Risk utility classes ─────────────────────────────────────────────────── */
+.ww-risk-low    { color: var(--color-green); }
+.ww-risk-medium { color: var(--color-amber); }
+.ww-risk-high   { color: var(--color-red); }
+.ww-risk-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-green);
+  transition: width 0.4s ease;
+}
+
+/* ── Shift utility classes ────────────────────────────────────────────────── */
+.ww-shift-neutral { background: var(--color-neutral-50); }
+.ww-shift-positive { background: var(--color-accent-light); }
+.ww-shift-change  { background: var(--color-warning-light); }
+
+/* ── Form label span variant (non-<label> usage) ──────────────────────────── */
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  display: block;
+  margin-bottom: var(--spacing-1);
+}
+
+/* ── Field error input state ──────────────────────────────────────────────── */
+.field-error-input {
+  border-color: var(--color-error) !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.1) !important;
 }
 
 /* ── Fingerprint badge ────────────────────────────────────────────────────── */

@@ -1,0 +1,7 @@
+{
+  "task_id": "task-wattwise",
+  "task_description": "Build WattWise — a complete, competition-ready electricity tariff intelligence web app on top of the existing TariffCompare React/Vite project. Migrate all .jsx/.js source to .tsx/.ts, implement five novelties (Digital Twin, Break-Even Explorer, Risk Shield, Regret Guard, Peak Shift Advisor), add Google Auth context, all required routes, Kiro specs, Firestore integration, Recharts visualisations, and a comprehensive Vitest test suite.",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004", "FEAT-005"],
+  "blocked_reason": null
+}

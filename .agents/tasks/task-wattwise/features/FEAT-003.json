@@ -1,0 +1,44 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "React application shell: AuthContext, Layout, shared components, routing, and all page stubs. Migrate main.tsx, App.tsx, Layout.tsx. Create AuthContext.tsx (Google Auth with all specified error codes). Create all shared UI components (LoadingSpinner, ErrorBoundary, ProtectedRoute, PlanCard, BillBreakdownTable, FingerprintCard, BreakEvenCard, RiskSummaryCard, RegretCard, ShiftCard, PlanEditor, SavingsCard, AuthPanel). Create stub pages for all 10 routes + 404. Depends on FEAT-001 and FEAT-002.",
+  "status": "completed",
+  "steps": [
+    "Create src/contexts/AuthContext.tsx. It must: use onAuthStateChanged to track auth state; expose user (User | null), loading (boolean), signInWithGoogle (), signOut () via React context; call signInWithPopup(auth, new GoogleAuthProvider()) for sign-in; handle all 9 specified error codes (auth/operation-not-allowed, auth/unauthorized-domain, auth/popup-blocked, auth/popup-closed-by-user, auth/cancelled-popup-request, auth/network-request-failed, auth/invalid-api-key, auth/configuration-not-found, auth/account-exists-with-different-credential) with friendly user-facing messages; prevent duplicate clicks with a busy state flag; handle the case where auth is null (Firebase not configured) gracefully; export useAuth() hook and AuthProvider component.",
+    "Create src/components/ProtectedRoute.tsx: reads useAuth(); if loading, render <LoadingSpinner />; if no user, navigate to /login?redirect=<current-path> using useLocation and useNavigate; otherwise render <Outlet />.",
+    "Create src/components/LoadingSpinner.tsx: accessible spinner with role='status' and visually-hidden text 'Loading...'. Uses CSS class .spinner from styles.css.",
+    "Create src/components/ErrorBoundary.tsx: class component extending React.Component that catches errors in children; renders a fallback UI with the error message and a 'Try again' button that resets error state.",
+    "Update styles.css: add WattWise color palette tokens to :root (--color-navy: #0A1628; --color-electric-blue: #1E40AF; --color-cyan: #06B6D4; --color-green: #10B981; --color-amber: #F59E0B; --color-red: #EF4444). Update existing --color-primary to #1E40AF and --color-accent to #10B981. Add new utility classes: .ww-card (navy border, white bg, rounded-lg, shadow), .ww-badge-fingerprint, .ww-badge-risk, .chip classes for fingerprint labels, responsive grid classes for comparison cards, .risk-meter progress bar styles, .regret-display styles, .shift-scenario-card styles, .break-even-zone styles. Add responsive .nav-tabs class for tabbed navigation in pages.",
+    "Migrate src/main.tsx (rename from main.jsx): wrap app in BrowserRouter, AuthProvider, and the existing LangProvider from src/lib/lang.jsx. Keep StrictMode. Import styles.css. Point at App.tsx.",
+    "Migrate src/App.tsx (rename from App.jsx): define all 10 routes plus 404. Use ProtectedRoute for /saved and /profile. Import all page components (created as stubs in the next step). Routes: / → LandingPage, /login → LoginPage, /calculator → CalculatorPage, /comparison → ComparisonPage, /digital-twin → DigitalTwinPage, /risk-shield → RiskShieldPage, /shift-advisor → ShiftAdvisorPage, /plans → PlansPage, /saved → SavedPage (protected), /profile → ProfilePage (protected), * → NotFoundPage. Wrap all in Layout component.",
+    "Migrate src/components/Layout.tsx (rename from Layout.jsx): update nav links to match WattWise routes (Home, Calculator, Plans, Login/Logout). Keep mobile hamburger toggle. Keep language toggle (useLang from lang.jsx). Update brand name from 'TariffCompare' to 'WattWise' and brand icon to Zap from lucide-react. Update footer text. Keep isConfigured status indicator.",
+    "Create stub pages — each is a minimal functional component that renders the page title and a 'Coming soon' note. These will be replaced in FEAT-004 and FEAT-005. Files to create as stubs: src/pages/LandingPage.tsx, LoginPage.tsx, CalculatorPage.tsx, ComparisonPage.tsx, DigitalTwinPage.tsx, RiskShieldPage.tsx, ShiftAdvisorPage.tsx, PlansPage.tsx, SavedPage.tsx, ProfilePage.tsx, NotFoundPage.tsx. NotFoundPage must have a real implementation: show 404, a description, and a Link back to /.",
+    "Create src/components/AuthPanel.tsx (replace AuthPanel.jsx): shows 'Continue with Google' button that calls signInWithGoogle() from AuthContext; shows user displayName when signed in; shows Sign Out button; handles Firebase-not-configured state with a clear message; shows auth errors inline; prevents duplicate clicks. This replaces the old phone-OTP AuthPanel.jsx which is no longer needed.",
+    "Create src/components/PlanCard.tsx: displays a TariffPlan with name, provider, rates table, fixed charge, status badge. Accepts props: plan: TariffPlan, isRecommended?: boolean, bill?: BillBreakdown.",
+    "Create src/components/BillBreakdownTable.tsx: renders a BillBreakdown as an accessible <table> with rows for off-peak/shoulder/peak charges, energy subtotal, fixed charge, surcharge, subtotal, duty, and total. Highlights the total row. Uses formatCurrency for all amounts.",
+    "Create src/components/FingerprintCard.tsx: displays a UsageFingerprint with the label as a large badge, percentage breakdown as a mini bar chart using Recharts PieChart or BarChart, and the explanation text.",
+    "Create src/components/BreakEvenCard.tsx: displays a BreakEvenResult. If crossoverExists, shows the crossover peak percentage and which plan is cheaper below/above. If no crossover, shows the 'one plan dominates' explanation. Optionally renders a Recharts LineChart showing both plan costs vs peak share.",
+    "Create src/components/RiskSummaryCard.tsx: displays a RiskShieldResult. Shows planStats table (scenariosWon, stabilityPercent, avgCost, worstCaseCost). Highlights cheapestToday, mostStablePlan, lowestWorstCasePlan. Shows recommendationConfidence as a percentage with a disclaimer it is not a statistical guarantee.",
+    "Create src/components/RegretCard.tsx: displays a RegretResult. Shows avgRegret and maxRegret in ₹. Shows the maxRegretScenario description. Renders the explanation string.",
+    "Create src/components/ShiftCard.tsx: displays an array of ShiftScenario. For each scenario shows unitsShifted, newPeakPercent, bills per plan, savings per plan, whether recommendation changes. Uses a Recharts BarChart to compare bills across scenarios.",
+    "Create src/components/PlanEditor.tsx (replace old PlanEditor.jsx): accepts a TariffPlan and onChange handler. Renders form fields for all TariffPlan properties. Used by PlansPage and CalculatorPage for custom plan entry.",
+    "Create src/components/SavingsCard.tsx: shows the savings amount between recommended and next-cheapest plan. Renders a Recharts BarChart comparing all plan totals. Shows effective cost per kWh per plan.",
+    "Update tests/App.test.jsx (or create tests/App.test.tsx) to mock Firebase modules (auth:null, db:null, isConfigured:false) and the lang module, render LandingPage in MemoryRouter, assert the WattWise heading and 'Continue with Google' or 'Start Comparing' CTA is present."
+  ],
+  "acceptance_criteria": [
+    "npm run build — succeeds with no TypeScript errors",
+    "npm run test — all tests pass including updated App test",
+    "Navigating to / renders LandingPage (no blank screen, no console errors about missing components)",
+    "Navigating to /saved redirects to /login?redirect=/saved when not authenticated",
+    "AuthContext.tsx exports useAuth hook and AuthProvider; useAuth returns { user, loading, signInWithGoogle, signOut }",
+    "Layout.tsx renders WattWise brand name, not TariffCompare",
+    "NotFoundPage renders a 404 heading and a link back to /",
+    "All 14 component files exist in src/components/"
+  ],
+  "verification": [
+    "npm run test — all tests pass",
+    "npm run build — succeeds"
+  ],
+  "blocked_reason": null,
+  "findings": "All 20 steps implemented. 31 files created/updated. npm run test: 101/101 pass. npm run build: succeeds (1290 kB bundle; chunk-size warning only, no errors). CRLF line-ending warnings on Windows git staging are cosmetic only. The old App.test.jsx (4 tests against HomePage.jsx) continues to pass alongside the new App.test.tsx (5 tests against LandingPage.tsx and NotFoundPage.tsx). src/main.tsx and src/App.tsx were created without deleting src/main.jsx / src/App.jsx per FEAT-005 constraint. formatCurrency.ts was added as a new utility (re-implements ₹ formatting using Intl.NumberFormat) rather than re-exporting the legacy JS module to avoid TS import issues."
+}
