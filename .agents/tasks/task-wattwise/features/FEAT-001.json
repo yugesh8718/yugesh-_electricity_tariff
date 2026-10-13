@@ -1,0 +1,36 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "TypeScript migration and project infrastructure. Install TypeScript and @types packages, create tsconfig.json, rename vite.config.js→vite.config.ts and tests/setup.js→tests/setup.ts, update package.json build script to run tsc type-check, create .env.example, update .gitignore, update index.html for WattWise branding, create Kiro spec files (.kiro/specs/wattwise/requirements.md, design.md, tasks.md), and update README.md. This FEAT leaves the app in a buildable, all-tests-passing state before any new feature code is written.",
+  "status": "completed",
+  "steps": [
+    "Install TypeScript and React type definitions: `npm install --save-dev typescript@5.7.3 @types/react@19 @types/react-dom@19`. Confirm they appear in devDependencies in package.json.",
+    "Create tsconfig.json at project root with the exact content specified in the task spec: target ES2020, lib [ES2020, DOM, DOM.Iterable], module ESNext, moduleResolution bundler, allowImportingTsExtensions true, resolveJsonModule true, isolatedModules true, noEmit true, jsx react-jsx, strict true, noUnusedLocals false, noUnusedParameters false, noFallthroughCasesInSwitch true, include [src, tests].",
+    "Rename tests/setup.js to tests/setup.ts. The content stays the same (import expect from vitest; import * as matchers from @testing-library/jest-dom/matchers; expect.extend(matchers)).",
+    "Rename vite.config.js to vite.config.ts. Update the file to the exact vite.config.ts spec: import defineConfig from vite, import react from @vitejs/plugin-react. In the test block: globals true, environment jsdom, setupFiles './tests/setup.ts' (updated from setup.js). Remove the old firebase inline field that was in vite.config.js.",
+    "Update package.json: change scripts.test to 'vitest run', add scripts.typecheck as 'tsc --noEmit'. Confirm build script remains 'vite build'. Add @types/react and @types/react-dom to devDependencies if not already there.",
+    "Update .env.example to exactly match the spec: six VITE_FIREBASE_* variables with empty values (no placeholder text like replace_with_your_api_key — just empty values after the = sign).",
+    "Update .gitignore to include the spec pattern: .env, .env.*, !.env.example (already present — verify and leave as-is if correct).",
+    "Update index.html: change title to 'WattWise — Electricity Tariff Intelligence', update meta description to 'Compare electricity tariff plans and estimate your bill with AI-powered insights.', change meta theme-color to #0A1628, update script src from /src/main.jsx to /src/main.tsx.",
+    "Create .kiro/specs/wattwise/requirements.md with EARS-format acceptance criteria covering all 15 categories: Google authentication, Guest calculator, Consumption Digital Twin, Bill calculation, Tariff comparison, Break-even analysis, Risk simulation, Regret calculation, Peak Shift Advisor, Saving comparisons, Custom tariffs, Firestore security, Accessibility, Error handling, Tests and build.",
+    "Create .kiro/specs/wattwise/design.md covering: architecture overview, routes table, component tree, TypeScript models (exact interfaces from spec), mathematical formulas (billing, fingerprint, break-even, risk, regret, shift), scenario-generation algorithm, break-even binary search algorithm, Firebase integration pattern, Firestore data model (users/{uid}/comparisons/{id} and users/{uid}/customPlans/{planId}), Firestore security rules, testing strategy.",
+    "Create .kiro/specs/wattwise/tasks.md with ordered implementation tasks referencing requirements from requirements.md.",
+    "Update README.md to describe WattWise: project purpose, setup instructions (copy .env.example to .env, fill Firebase values, npm install, npm run dev), available routes, technology stack, and disclaimer that all sample tariffs are for demonstration only."
+  ],
+  "acceptance_criteria": [
+    "Running `npm run test` passes all 96+ existing tests without modification to calculateBill.test.js, comparePlans.test.js, tariffEngine.test.js, or catalogue.test.js",
+    "Running `npm run build` succeeds without TypeScript errors (the build command triggers Vite which respects tsconfig)",
+    "tsconfig.json exists at project root with strict: true and the exact compiler options from spec",
+    "vite.config.ts exists and vite.config.js no longer exists",
+    "tests/setup.ts exists and tests/setup.js no longer exists",
+    ".kiro/specs/wattwise/requirements.md, design.md, and tasks.md all exist and are non-empty",
+    ".env.example has all six VITE_FIREBASE_* keys with empty values",
+    "index.html title is 'WattWise — Electricity Tariff Intelligence'"
+  ],
+  "verification": [
+    "npm run test — all 96 existing tests pass",
+    "npm run build — build succeeds, dist/index.html exists"
+  ],
+  "blocked_reason": null,
+  "findings": "All 96 existing tests pass with setup.ts rename and vite.config.ts update. Created src/main.tsx as entry point (index.html references main.tsx; original main.jsx kept). tsconfig.json includes src and tests. TypeScript 5.7.3 installed with @types/react@19 and @types/react-dom@19. All .kiro/specs/wattwise/ spec files created. Build produces dist/index.html with WattWise title. Chunk-size advisory for lucide-react/recharts is expected (not an error)."
+}
