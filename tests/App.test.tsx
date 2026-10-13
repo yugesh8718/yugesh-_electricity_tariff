@@ -92,7 +92,7 @@ describe('LandingPage', () => {
     renderInProviders(<LandingPage />);
     // WattWise brand name appears as eyebrow text; h1 contains the product tagline
     expect(
-      screen.getByRole('heading', { name: /Explainable Electricity Tariff Intelligence/i, level: 1 }),
+      screen.getByRole('heading', { name: /Know Your Electricity Plan/i, level: 1 }),
     ).toBeInTheDocument();
   });
 
@@ -101,9 +101,9 @@ describe('LandingPage', () => {
     expect(screen.getByRole('link', { name: /start comparing/i })).toBeInTheDocument();
   });
 
-  it('has a "Browse Plans" call-to-action link', () => {
+  it('has a "View Plans" call-to-action link', () => {
     renderInProviders(<LandingPage />);
-    expect(screen.getByRole('link', { name: /browse plans/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /view plans/i })).toBeInTheDocument();
   });
 });
 
