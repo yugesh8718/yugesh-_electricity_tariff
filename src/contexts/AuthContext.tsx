@@ -72,6 +72,8 @@ interface AuthContextValue {
   authError: string | null;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  /** True when the current user authenticated via phone OTP */
+  isPhoneUser: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -133,8 +135,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Detect phone-authenticated user (providerData contains 'phone' provider)
+  const isPhoneUser = !!(user?.providerData?.some((p) => p.providerId === 'phone'));
+
   return (
-    <AuthContext.Provider value={{ user, loading, authError, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, loading, authError, signInWithGoogle, signOut, isPhoneUser }}>
       {children}
     </AuthContext.Provider>
   );

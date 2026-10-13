@@ -1109,3 +1109,133 @@ input:disabled, select:disabled { background: var(--color-neutral-100); cursor: 
     width: calc(100vw - 16px);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Auth Tabs (Google / Phone)
+   ═══════════════════════════════════════════════════════════════════ */
+.auth-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-border, #e5e7eb);
+  padding-bottom: 0;
+}
+
+.auth-tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-neutral-600, #4b5563);
+  margin-bottom: -2px;
+  border-radius: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.auth-tab:hover {
+  color: var(--color-electric-blue, #1e40af);
+}
+
+.auth-tab--active {
+  color: var(--color-electric-blue, #1e40af);
+  border-bottom-color: var(--color-electric-blue, #1e40af);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Phone Auth Panel
+   ═══════════════════════════════════════════════════════════════════ */
+.phone-auth-panel {
+  margin-top: 0.5rem;
+}
+
+.phone-auth-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-navy, #0a1628);
+}
+
+.phone-auth-subtitle {
+  margin-bottom: 1rem;
+  color: var(--color-neutral-600, #4b5563);
+  font-size: 0.95rem;
+}
+
+.phone-auth-input-row {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--color-border, #d1d5db);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.phone-auth-prefix {
+  padding: 0 0.75rem;
+  background: var(--color-bg-alt, #f3f4f6);
+  border-right: 1.5px solid var(--color-border, #d1d5db);
+  font-size: 0.95rem;
+  color: var(--color-navy, #0a1628);
+  font-weight: 600;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.phone-auth-number-input {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  padding: 0 0.75rem;
+  font-size: 1rem;
+  height: 42px;
+  background: transparent;
+  letter-spacing: 0.05em;
+}
+
+.phone-auth-otp-input {
+  text-align: center;
+  font-size: 1.5rem;
+  letter-spacing: 0.4em;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--color-electric-blue, #1e40af);
+  border-radius: 8px;
+  width: 100%;
+  color: var(--color-navy, #0a1628);
+}
+
+.phone-auth-otp-input:focus {
+  outline: 3px solid var(--color-cyan, #06b6d4);
+  outline-offset: 2px;
+}
+
+.phone-auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.phone-auth-success {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #d1fae5;
+  border: 1.5px solid #10b981;
+  border-radius: 10px;
+}
+
+.phone-auth-success-icon {
+  font-size: 2rem;
+}
+
+.phone-auth-success-title {
+  font-weight: 700;
+  color: #065f46;
+  font-size: 1.05rem;
+}
