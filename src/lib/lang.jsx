@@ -73,6 +73,28 @@ const TRANSLATIONS = {
     taxes:           'Taxes & Duties',
     subsidy:         'Subsidy',
     totalPayable:    'Estimated total payable',
+
+    // Notifications
+    notifOffPeakHigh:
+      '✅ Great choice — high off-peak usage (≥90%) means lower costs on TOU plans. / அதிகமான ஆஃப்-பீக் பயன்பாடு (≥90%) — TOU திட்டங்களில் குறைந்த கட்டணம்.',
+    notifNormalHigh:
+      'ℹ️ High normal-period usage (≥70%) detected. Consider a flat-rate plan for predictability. / அதிகமான இயல்பு நேர பயன்பாடு (≥70%) — flat-rate திட்டம் பரிசீலிக்கவும்.',
+    notifPeakHigh:
+      '⚠️ Peak usage is high (≥50%). This may increase costs on time-of-use plans. / பீக் பயன்பாடு அதிகமாக உள்ளது (≥50%). TOU திட்டங்களில் கட்டணம் அதிகரிக்கலாம்.',
+    notifStateChanged:
+      'ℹ️ State changed to {state}. Please select an electricity board. / மாநிலம் {state} ஆக மாற்றப்பட்டது. மின் வாரியத்தை தேர்ந்தெடுக்கவும்.',
+    notifBoardChanged:
+      'ℹ️ Board changed to {board}. Select a consumer category to continue. / வாரியம் {board} ஆக மாற்றப்பட்டது. நுகர்வோர் வகையை தேர்ந்தெடுக்கவும்.',
+    notifDemoRates:
+      '⚠️ DEMO RATES — Sample data only. Not official tariffs. Do not use for actual billing. / ⚠️ டெமோ விகிதங்கள் — மாதிரி தரவு மட்டுமே. உண்மையான கட்டணத்திற்கு பயன்படுத்தாதீர்கள்.',
+    notifPercentError:
+      '❌ Percentages must total 100%. Current total: {pct}%. Please adjust. / சதவீதங்கள் 100% ஆக இருக்க வேண்டும். தற்போதைய மொத்தம்: {pct}%.',
+    notifFirebaseError:
+      '❌ Firebase data could not be loaded. Running in demo mode. / Firebase தரவை ஏற்ற முடியவில்லை. டெமோ முறையில் இயங்குகிறது.',
+    notifBillDone:
+      '✅ Bill calculated using plan: {plan}. / திட்டம் {plan} பயன்படுத்தி கட்டணம் கணக்கிடப்பட்டது.',
+    notifCheaperPlan:
+      'ℹ️ A cheaper plan is available: {plan} saves ₹{amount}. / மலிவான திட்டம் கிடைக்கிறது: {plan} — ₹{amount} சேமிப்பு.',
   },
 
   ta: {
@@ -134,6 +156,28 @@ const TRANSLATIONS = {
     taxes:           'வரிகள் மற்றும் கடமைகள்',
     subsidy:         'மானியம்',
     totalPayable:    'மதிப்பீட்டு மொத்தம்',
+
+    // Notifications
+    notifOffPeakHigh:
+      '✅ ஆஃப்-பீக் பயன்பாடு அதிகமாக உள்ளது (≥90%) — TOU திட்டங்களில் குறைந்த கட்டணம். / Great — high off-peak usage means lower TOU costs.',
+    notifNormalHigh:
+      'ℹ️ இயல்பு நேர பயன்பாடு அதிகமாக உள்ளது (≥70%) — flat-rate திட்டம் பரிசீலிக்கவும். / High normal-period usage detected.',
+    notifPeakHigh:
+      '⚠️ பீக் பயன்பாடு அதிகமாக உள்ளது (≥50%) — TOU திட்டங்களில் கட்டணம் அதிகரிக்கலாம். / Peak usage is high — may cost more on TOU plans.',
+    notifStateChanged:
+      'ℹ️ மாநிலம் {state} ஆக மாற்றப்பட்டது. மின் வாரியத்தை தேர்ந்தெடுக்கவும். / State changed to {state}.',
+    notifBoardChanged:
+      'ℹ️ வாரியம் {board} ஆக மாற்றப்பட்டது. நுகர்வோர் வகையை தேர்ந்தெடுக்கவும். / Board changed to {board}.',
+    notifDemoRates:
+      '⚠️ டெமோ விகிதங்கள் — மாதிரி தரவு மட்டுமே. உண்மையான கட்டணத்திற்கு பயன்படுத்தாதீர்கள். / DEMO RATES — not official tariffs.',
+    notifPercentError:
+      '❌ சதவீதங்கள் 100% ஆக இருக்க வேண்டும். தற்போதைய மொத்தம்: {pct}%. / Percentages must total 100%. Current: {pct}%.',
+    notifFirebaseError:
+      '❌ Firebase தரவை ஏற்ற முடியவில்லை. டெமோ முறையில் இயங்குகிறது. / Firebase data could not be loaded. Running in demo mode.',
+    notifBillDone:
+      '✅ திட்டம் {plan} பயன்படுத்தி கட்டணம் கணக்கிடப்பட்டது. / Bill calculated using plan: {plan}.',
+    notifCheaperPlan:
+      'ℹ️ மலிவான திட்டம் கிடைக்கிறது: {plan} — ₹{amount} சேமிப்பு. / Cheaper plan available: {plan} saves ₹{amount}.',
   },
 };
 
