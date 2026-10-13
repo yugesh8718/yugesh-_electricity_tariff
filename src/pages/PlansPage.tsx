@@ -4,6 +4,11 @@
  * Tariff plan library. Shows SAMPLE_PLANS + custom plans.
  * Custom plans can be added via PlanEditor and stored in sessionStorage
  * (or Firestore when logged in).
+ *
+ * FEAT-003 addition:
+ *  - When 'ww-state-ctx' is set in sessionStorage, a "State Tariff Schedules"
+ *    section is shown above the sample plans, listing the plans from the
+ *    selected board and its categories.
  */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +17,11 @@ import PlanCard from '../components/PlanCard';
 import PlanEditor from '../components/PlanEditor';
 import { useAuth } from '../contexts/AuthContext';
 import { saveCustomPlan, getCustomPlans, deleteCustomPlan as deleteCustomPlanFirestore } from '../lib/firestore';
+import {
+  getCategoriesByBoard,
+  scheduleToTariffPlan,
+  getBoardsByState,
+} from '../data/indiaBoards.ts';
 import type { TariffPlan } from '../types';
 
 const STORAGE_KEY = 'ww-custom-plans';
@@ -30,6 +40,17 @@ function makeBlankPlan(id: string): TariffPlan {
   };
 }
 
+// ---------------------------------------------------------------------------
+// State context type (written by CalculatorPage via FEAT-001/002)
+// ---------------------------------------------------------------------------
+
+interface StateCtx {
+  stateId?: string;
+  boardId?: string;
+  boardName?: string;
+  scheduleId?: string;
+}
+
 export default function PlansPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -40,6 +61,24 @@ export default function PlansPage() {
     makeBlankPlan(`custom-${Date.now()}`)
   );
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // FEAT-003: read state context from sessionStorage
+  const stateCtxRaw = sessionStorage.getItem('ww-state-ctx');
+  const stateCtx: StateCtx = stateCtxRaw ? (JSON.parse(stateCtxRaw) as StateCtx) : {};
+
+  // Build state tariff plans from the selected board's categories
+  const statePlans: TariffPlan[] = [];
+  if (stateCtx.stateId && stateCtx.boardId) {
+    const boards = getBoardsByState(stateCtx.stateId);
+    const board = boards.find((b) => b.boardId === stateCtx.boardId);
+    const boardName = board?.shortName ?? stateCtx.boardId;
+    const categories = getCategoriesByBoard(stateCtx.stateId, stateCtx.boardId);
+    for (const cat of categories) {
+      for (const sched of cat.schedules) {
+        statePlans.push(scheduleToTariffPlan(sched, boardName));
+      }
+    }
+  }
 
   // Load custom plans from Firestore (if logged in) or sessionStorage
   useEffect(() => {
@@ -119,6 +158,28 @@ export default function PlansPage() {
           </button>
         </div>
       </div>
+
+      {/* ── FEAT-003: State tariff schedules section ──────────────────────── */}
+      {statePlans.length > 0 && (
+        <section aria-labelledby="state-plans-heading" style={{ marginBottom: '2rem' }}>
+          <h2 id="state-plans-heading" style={{ marginBottom: '0.5rem' }}>
+            State Tariff Schedules
+          </h2>
+          <p style={{ fontSize: '0.88rem', color: 'var(--color-neutral-600)', marginBottom: '0.75rem' }}>
+            Demo schedules for{' '}
+            <strong>{stateCtx.boardId?.toUpperCase()}</strong>{' '}
+            ({stateCtx.stateId?.toUpperCase()}).{' '}
+            <span className="badge-demo">Demo rates — not official tariffs</span>
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            {statePlans.map((plan) => (
+              <div key={plan.id} style={{ flex: '1 1 300px' }}>
+                <PlanCard plan={plan} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Sample plans ─────────────────────────────────────────────────── */}
       <section aria-labelledby="sample-plans-heading">

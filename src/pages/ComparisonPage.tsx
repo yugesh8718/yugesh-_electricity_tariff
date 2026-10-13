@@ -3,6 +3,12 @@
  *
  * Reads 'ww-consumption' from sessionStorage, runs generateComparison,
  * and displays all results with links to the detail pages.
+ *
+ * FEAT-003 additions:
+ *  - Success notification after result is set
+ *  - Verification badges per plan breakdown card
+ *  - State/board source line when ww-state-ctx is set
+ *  - Tie badge when two plans share the lowest cost
  */
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,16 +16,55 @@ import { SAMPLE_PLANS } from '../data/samplePlans.ts';
 import { generateComparison } from '../utils/recommendationEngine';
 import { saveComparison } from '../lib/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { isConfigured } from '../firebase/config';
 import SavingsCard from '../components/SavingsCard';
 import BillBreakdownTable from '../components/BillBreakdownTable';
-import type { ConsumptionInput, TariffPlan, ComparisonResult } from '../types';
+import type { ConsumptionInput, TariffPlan, ComparisonResult, BillBreakdown } from '../types';
+
+// ---------------------------------------------------------------------------
+// Helper — derive verification badge class and label from plan description
+// ---------------------------------------------------------------------------
+
+function getVerificationBadge(description?: string): { className: string; label: string } {
+  if (!description || description.toLowerCase().includes('demo')) {
+    return { className: 'badge-demo', label: 'Demo rates' };
+  }
+  if (description.toLowerCase().includes('verified')) {
+    return { className: 'badge-verified', label: 'Verified' };
+  }
+  return { className: 'badge-unverified', label: 'Unverified' };
+}
+
+// ---------------------------------------------------------------------------
+// Helper — find the minimum estimated total across all bills
+// ---------------------------------------------------------------------------
+
+function getMinTotal(bills: BillBreakdown[]): number {
+  return Math.min(...bills.map((b) => b.estimatedTotal));
+}
+
+// ---------------------------------------------------------------------------
+// State context type (written by CalculatorPage)
+// ---------------------------------------------------------------------------
+
+interface StateCtx {
+  stateId?: string;
+  boardId?: string;
+  boardName?: string;
+  scheduleId?: string;
+}
 
 export default function ComparisonPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addNotification } = useNotification();
   const [result, setResult] = useState<ComparisonResult | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  // Read state context set by CalculatorPage (FEAT-001/002)
+  const stateCtxRaw = sessionStorage.getItem('ww-state-ctx');
+  const stateCtx: StateCtx = stateCtxRaw ? (JSON.parse(stateCtxRaw) as StateCtx) : {};
 
   useEffect(() => {
     const raw = sessionStorage.getItem('ww-consumption');
@@ -36,9 +81,19 @@ export default function ComparisonPage() {
       const comparison = generateComparison(consumption, plans);
       setResult(comparison);
       sessionStorage.setItem('ww-result', JSON.stringify(comparison));
+
+      // FEAT-003: success notification with recommended plan name
+      const recommended = comparison.plans.find((p) => p.id === comparison.recommendedPlanId);
+      if (recommended) {
+        addNotification(
+          'success',
+          `✅ Bill calculated using plan: ${recommended.name}. / திட்டம் ${recommended.name} பயன்படுத்தி கட்டணம் கணக்கிடப்பட்டது.`,
+        );
+      }
     } catch {
       navigate('/calculator', { replace: true });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   async function handleSave() {
@@ -65,6 +120,19 @@ export default function ComparisonPage() {
 
   const { bills, recommendedPlanId, consumption } = result;
   const recommendedPlan = result.plans.find((p) => p.id === recommendedPlanId);
+
+  // FEAT-003: detect ties — any bill sharing the minimum total
+  const minTotal = getMinTotal(bills);
+  const tiedPlanIds = bills
+    .filter((b) => Math.abs(b.estimatedTotal - minTotal) < 0.01)
+    .map((b) => b.planId);
+  const hasTie = tiedPlanIds.length > 1;
+
+  // FEAT-003: build source label from state context
+  const sourceLabel =
+    stateCtx.boardName && stateCtx.stateId
+      ? `Source: ${stateCtx.stateId.toUpperCase()} — ${stateCtx.boardName}`
+      : null;
 
   return (
     <div className="page comparison-page">
@@ -133,19 +201,53 @@ export default function ComparisonPage() {
           Detailed breakdown
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {bills.map((bill) => (
-            <div key={bill.planId} className="panel">
-              <h3 style={{ marginBottom: '0.75rem' }}>
-                {bill.planName}
-                {bill.planId === recommendedPlanId && (
-                  <span className="badge badge-winner" style={{ marginLeft: '0.75rem' }}>
-                    Recommended
-                  </span>
-                )}
-              </h3>
-              <BillBreakdownTable breakdown={bill} />
-            </div>
-          ))}
+          {bills.map((bill) => {
+            // FEAT-003: find the corresponding plan to read description
+            const plan = result.plans.find((p) => p.id === bill.planId);
+            const { className: badgeClass, label: badgeLabel } = getVerificationBadge(
+              plan?.description,
+            );
+            const isTied = hasTie && tiedPlanIds.includes(bill.planId);
+
+            return (
+              <div key={bill.planId} className="panel">
+                <h3 style={{ marginBottom: '0.5rem' }}>
+                  {bill.planName}
+                  {bill.planId === recommendedPlanId && (
+                    <span className="badge badge-winner" style={{ marginLeft: '0.75rem' }}>
+                      Recommended
+                    </span>
+                  )}
+                  {isTied && (
+                    <span
+                      className="badge"
+                      style={{
+                        marginLeft: '0.75rem',
+                        background: 'var(--color-primary-light)',
+                        color: 'var(--color-primary)',
+                      }}
+                    >
+                      Tie
+                    </span>
+                  )}
+                </h3>
+
+                {/* FEAT-003: verification badge */}
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                  <span className={badgeClass}>{badgeLabel}</span>
+
+                  {/* FEAT-003: state/board source when ww-state-ctx is set */}
+                  {sourceLabel && (
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', margin: 0 }}>
+                      {sourceLabel}
+                    </p>
+                  )}
+                </div>
+
+                <BillBreakdownTable breakdown={bill} />
+              </div>
+            );
+          })}
         </div>
       </section>
 

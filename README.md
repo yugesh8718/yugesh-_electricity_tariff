@@ -12,6 +12,7 @@ Beyond a standard tariff calculator, WattWise offers five original features:
 
 | Feature | Description |
 |---------|-------------|
+| **State-wise Selection** | Covers all 36 Indian states and UTs with their electricity boards, consumer categories, and tariff schedules |
 | **Consumption Digital Twin** | Assigns a usage fingerprint (e.g. Off-Peak Optimiser, Peak-Heavy Household) from actual consumption percentages |
 | **Tariff Break-Even Explorer** | Finds the exact peak-usage percentage at which the cheapest plan changes |
 | **Tariff Risk Shield** | Simulates 25 future scenarios and scores how stable the recommendation is |
@@ -172,3 +173,15 @@ firestore.rules Firestore security rules
 ## Disclaimer
 
 All sample tariff rates, plan names, and billing figures shown in this application are illustrative demonstration data only. They are not affiliated with or endorsed by any electricity distribution company. Do not use these figures for actual billing, financial, or energy planning decisions.
+
+---
+
+## State-wise Tariff System
+
+`src/data/indiaBoards.ts` contains a catalogue of all 36 Indian states and Union Territories, their electricity distribution boards (DISCOMs), consumer categories, and demo tariff schedules. The data follows the `StateBoard → BoardEntry → ConsumerCategory → TariffSchedule` hierarchy.
+
+**All rates are demo/sample data.** No rate has been verified against an official SERC or DISCOM tariff order. The `verificationStatus` field is always `'demo'`.
+
+To add a new state, append a `StateBoard` entry to `INDIA_BOARDS` whose `stateId` matches the corresponding `id` in `src/data/indiaRegions.js`, then add `BoardEntry` objects with at least one `ConsumerCategory` and one `TariffSchedule`.
+
+> **Note:** Verified official rates require a current SERC tariff order. Consult the relevant State Electricity Regulatory Commission website before publishing any rate as verified.
