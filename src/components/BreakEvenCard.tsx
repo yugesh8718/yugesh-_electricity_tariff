@@ -70,7 +70,7 @@ export default function BreakEvenCard({ result, costCurves, planNames = [] }: Pr
                   label={{ value: 'Peak %', position: 'insideBottom', offset: -4 }}
                 />
                 <YAxis tickFormatter={(v: number) => `₹${v}`} />
-                <Tooltip formatter={(value: number) => `₹${value.toFixed(2)}`} />
+                <Tooltip formatter={(value) => `₹${Number(value).toFixed(2)}`} />
                 <Legend />
                 {result.crossoverExists && result.crossoverPeakPercent !== null && (
                   <ReferenceLine

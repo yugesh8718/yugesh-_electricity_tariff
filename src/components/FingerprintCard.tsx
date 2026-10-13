@@ -56,7 +56,7 @@ export default function FingerprintCard({ fingerprint }: Props) {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
+            <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>

@@ -54,7 +54,7 @@ export default function ShiftCard({ scenarios }: Props) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" />
             <YAxis tickFormatter={(v: number) => `₹${v}`} />
-            <Tooltip formatter={(value: number) => formatCurrency(value)} />
+            <Tooltip formatter={(value) => formatCurrency(Number(value))} />
             <Legend />
             {scenarios[0].bills.map((b, i) => (
               <Bar

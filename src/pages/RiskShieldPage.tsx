@@ -123,7 +123,7 @@ export default function RiskShieldPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="label" />
                 <YAxis tickFormatter={(v: number) => `₹${v.toFixed(0)}`} />
-                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                 <Legend />
                 {plans.map((plan, i) => (
                   <Bar

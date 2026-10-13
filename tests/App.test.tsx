@@ -8,6 +8,20 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
+// Add jest-dom matchers to Vitest's type system for this file
+declare module 'vitest' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface Assertion<R extends void | Promise<void> = void, T = unknown> {
+    toBeInTheDocument(): R;
+    toHaveAttribute(attr: string, value?: unknown): R;
+    toHaveTextContent(text: string | RegExp, options?: { normalizeWhitespace?: boolean }): R;
+    toBeVisible(): R;
+    toBeDisabled(): R;
+    toHaveClass(...classNames: string[]): R;
+    toHaveValue(value?: string | string[] | number | null): R;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Mock Firebase config (not configured → guest mode)
 // ---------------------------------------------------------------------------

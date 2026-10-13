@@ -69,7 +69,7 @@ export default function SavingsCard({ bills, recommendedPlanId }: Props) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
             <YAxis tickFormatter={(v: number) => `₹${v}`} />
-            <Tooltip formatter={(value: number) => formatCurrency(value)} />
+            <Tooltip formatter={(value) => formatCurrency(Number(value))} />
             <Legend />
             <Bar dataKey="Estimated bill (₹)" fill="#1E40AF" />
           </BarChart>
