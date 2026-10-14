@@ -1,147 +1,43 @@
-# WattWise — Explainable Electricity Tariff Intelligence
+# WattWise — Electricity Tariff Plan Comparator
 
-A competition-ready web application that compares electricity tariff plans, estimates bills, and explains the lowest-cost option using a **Consumption Digital Twin** of the user's electricity-usage pattern.
+> ⚠️ **All tariff rates in this application are DEMO DATA only. They are not verified official electricity rates and must not be used for actual billing decisions.**
 
-> ⚠️ **All sample tariff rates are for demonstration only. They are not official electricity tariffs and must not be used for actual billing or financial decisions.**
+A full-stack web application that helps Indian electricity consumers compare tariff plans, estimate their monthly bill, and understand which plan suits their usage pattern best.
 
 ---
 
-## What makes WattWise different
+## What this project does
 
-Beyond a standard tariff calculator, WattWise offers five original features:
-
-| Feature | Description |
-|---------|-------------|
-| **State-wise Selection** | Covers all 36 Indian states and UTs with their electricity boards, consumer categories, and tariff schedules |
-| **Consumption Digital Twin** | Assigns a usage fingerprint (e.g. Off-Peak Optimiser, Peak-Heavy Household) from actual consumption percentages |
-| **Tariff Break-Even Explorer** | Finds the exact peak-usage percentage at which the cheapest plan changes |
-| **Tariff Risk Shield** | Simulates 25 future scenarios and scores how stable the recommendation is |
-| **Plan Regret Guard** | Shows how much more you could pay if your consumption changes |
-| **Peak Shift Advisor** | Estimates savings from moving peak consumption to off-peak hours |
+- **State-wise tariff selection** — All 36 Indian states and union territories with multiple DISCOMs and consumer categories.
+- **Consumption Pattern Inputs** — Enter total units and distribute by off-peak / normal / peak percentage with a visual bar.
+- **Multi-plan comparison** — Compare 2+ tariff plans; shows each plan's estimated bill, cheapest plan, savings, and recommendation reason.
+- **Five analytical features:**
+  - 🔬 Consumption Digital Twin (usage fingerprint)
+  - ⚖️ Tariff Break-Even Explorer (crossover point)
+  - 🛡️ Tariff Risk Shield (25 scenario simulation)
+  - 😬 Plan Regret Guard (worst-case overpay)
+  - 🔄 Peak Shift Advisor (shift savings)
+- **PDF/Print export** — Download or print a comparison report.
+- **Firebase Authentication** — Google sign-in and Phone OTP (SMS).
+- **Firestore cloud save** — Save and retrieve comparisons.
+- **Tamil / English toggle** — Language switch in the navigation bar.
+- **Demo mode** — Works completely without Firebase credentials.
 
 ---
 
 ## Technology stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, TypeScript, Vite |
-| Routing | React Router DOM v7 |
-| Styling | Plain CSS with design tokens |
+| Component | Technology |
+|---|---|
+| Frontend | React 18 + TypeScript |
+| Build tool | Vite |
+| Styling | Plain CSS (CSS custom properties) |
 | Icons | Lucide React |
 | Charts | Recharts |
-| Auth + DB | Firebase Authentication + Cloud Firestore |
+| Routing | React Router DOM v7 |
+| PDF export | jsPDF + jsPDF-AutoTable |
+| Backend | Firebase (Auth + Firestore) |
 | Tests | Vitest + @testing-library/react |
-
----
-
-## Routes
-
-| URL | Page | Auth |
-|-----|------|------|
-| `/` | Landing page | No |
-| `/login` | Google sign-in | No |
-| `/calculator` | Consumption input | No |
-| `/comparison` | Plan comparison results | No |
-| `/digital-twin` | Usage fingerprint | No |
-| `/risk-shield` | Scenario risk simulation | No |
-| `/shift-advisor` | Peak Shift Advisor | No |
-| `/plans` | Tariff plan library | No |
-| `/saved` | Saved comparisons | Yes |
-| `/profile` | User profile | Yes |
-
----
-
-## Quick start
-
-### 1. Install dependencies
-
-```bash
-npm install
-```
-
-### 2. Configure Firebase
-
-Copy `.env.example` to `.env`:
-
-```bash
-# PowerShell
-Copy-Item .env.example .env
-```
-
-Fill in the values from Firebase Console → Project settings → Your apps → Web app:
-
-```
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-```
-
-> The calculator and comparison features work without Firebase. Only saved comparisons and Google sign-in require it.
-
-### 3. Run in development mode
-
-```bash
-npm run dev
-```
-
-Open http://localhost:5173
-
-### 4. Run tests
-
-```bash
-npm run test
-```
-
-### 5. Type-check
-
-```bash
-npm run typecheck
-```
-
-### 6. Build for production
-
-```bash
-npm run build
-```
-
-Output goes to the `dist/` folder.
-
----
-
-## Firebase setup
-
-### Enable Google Authentication
-
-1. Firebase Console → Build → Authentication → Get started
-2. Sign-in method → Google → Enable → Save
-3. Add `localhost` to Authorised domains (Authentication → Settings)
-
-### Create Cloud Firestore
-
-1. Firebase Console → Build → Firestore Database → Create database
-2. Start in production mode
-3. Deploy security rules: `firebase deploy --only firestore:rules`
-
-### Firestore security rules
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{uid}/{document=**} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == uid;
-    }
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-}
-```
 
 ---
 
@@ -149,39 +45,214 @@ service cloud.firestore {
 
 ```
 src/
-  components/   Shared UI components
-  contexts/     AuthContext (Firebase auth state)
-  data/         Static plan and rate data
-  firebase/     Firebase initialisation and guard
-  lib/          Firestore operations, i18n, auth helpers
-  pages/        Page components (one per route)
-  types/        TypeScript interfaces
-  utils/        Pure calculation utilities (no React)
-  styles.css    All CSS — tokens, layout, components
-  App.tsx       Router shell
-  main.tsx      Application entry point
-
-tests/          Unit and component tests (Vitest)
-.kiro/specs/    Requirements, design, and task specs
-.env.example    Firebase config template (committed)
-.env            Your local Firebase config (NOT committed)
-firestore.rules Firestore security rules
+  App.tsx                   — Application router (10 routes)
+  pages/                    — One file per page/route
+  components/               — Shared UI components
+  contexts/                 — AuthContext, NotificationContext
+  utils/                    — Billing engine, recommendation engine, PDF export
+  data/                     — India boards/DISCOMs (36 states), sample plans
+  lib/                      — Firestore access, Firebase auth helpers, i18n
+  firebase/                 — Firebase initialization (config.ts)
+  types/                    — TypeScript interfaces
+tests/                      — 17 test files
 ```
 
 ---
 
-## Disclaimer
+## Prerequisites
 
-All sample tariff rates, plan names, and billing figures shown in this application are illustrative demonstration data only. They are not affiliated with or endorsed by any electricity distribution company. Do not use these figures for actual billing, financial, or energy planning decisions.
+- **Node.js LTS** (v18 or later) — https://nodejs.org
+- **npm** (comes with Node.js)
 
 ---
 
-## State-wise Tariff System
+## 1. Install dependencies
 
-`src/data/indiaBoards.ts` contains a catalogue of all 36 Indian states and Union Territories, their electricity distribution boards (DISCOMs), consumer categories, and demo tariff schedules. The data follows the `StateBoard → BoardEntry → ConsumerCategory → TariffSchedule` hierarchy.
+```bash
+cd electricity-tariff-comparator
+npm install
+```
 
-**All rates are demo/sample data.** No rate has been verified against an official SERC or DISCOM tariff order. The `verificationStatus` field is always `'demo'`.
+---
 
-To add a new state, append a `StateBoard` entry to `INDIA_BOARDS` whose `stateId` matches the corresponding `id` in `src/data/indiaRegions.js`, then add `BoardEntry` objects with at least one `ConsumerCategory` and one `TariffSchedule`.
+## 2. Run in demo mode (no Firebase needed)
 
-> **Note:** Verified official rates require a current SERC tariff order. Consult the relevant State Electricity Regulatory Commission website before publishing any rate as verified.
+```bash
+npm run dev
+```
+
+Open **http://localhost:5173** in your browser. The full calculator works without any Firebase account.
+
+---
+
+## 3. Configure Firebase (to enable sign-in and cloud save)
+
+### Step 1 — Create .env
+
+Copy `.env.example` to a new file called `.env` in the same folder:
+
+```bash
+copy .env.example .env
+```
+
+Open `.env` and fill in your Firebase project values:
+
+```
+VITE_FIREBASE_API_KEY=your-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+```
+
+Get these values from: **Firebase Console → Project settings (⚙) → Your apps → Web app → SDK setup → Config**
+
+### Step 2 — Enable authentication providers
+
+In **Firebase Console → Authentication → Sign-in method**:
+
+- **Google** → Enable → choose support email → Save
+- **Phone** → Enable → Save
+
+### Step 3 — Enable localhost as an authorized domain
+
+**Firebase Console → Authentication → Settings → Authorized domains**
+
+Confirm `localhost` is listed. Add it if not.
+
+### Step 4 — Create Firestore database
+
+**Firebase Console → Firestore Database → Create database → Production mode → Choose region → Enable**
+
+### Step 5 — Deploy Firestore security rules
+
+```bash
+firebase login
+firebase deploy --only firestore:rules
+```
+
+Or manually paste the contents of `firestore.rules` into the Firebase Console Rules editor and click **Publish**.
+
+### Step 6 — Restart the dev server
+
+```bash
+# Press Ctrl+C to stop, then:
+npm run dev
+```
+
+---
+
+## 4. Phone OTP setup
+
+### For testing (no real SMS, free)
+
+1. Firebase Console → Authentication → Sign-in method → Phone → **Phone numbers for testing**
+2. Add: `+91 9999999999` with OTP `123456`
+3. Use this number in the app to test without sending real SMS
+
+### For real SMS (requires Blaze billing plan)
+
+Firebase charges for SMS beyond the free tier. Enable billing in Firebase Console → Project settings → Billing before using real phone numbers in production.
+
+---
+
+## 5. Create the first admin user
+
+Admin access is checked via Firestore `/admins/{uid}`.
+
+1. Sign in to the app with Google.
+2. Open Firebase Console → Authentication → Users → copy your **User UID**.
+3. Open Firebase Console → Firestore → create collection `admins` → document ID = your UID → add field `email: "your@email.com"` → Save.
+
+---
+
+## 6. Run tests
+
+```bash
+npm run test
+```
+
+Expected: **287 tests passing** across 17 test files.
+
+---
+
+## 7. Production build
+
+```bash
+npm run build
+```
+
+Output goes to `dist/`. You will see chunk-size advisories for jsPDF and recharts — these are performance suggestions, not errors.
+
+---
+
+## 8. Deploy to Firebase Hosting
+
+```bash
+npm run build
+firebase login
+firebase deploy --only hosting
+```
+
+After deploying, add your `.web.app` domain to Firebase Console → Authentication → Authorized domains.
+
+---
+
+## 9. GitHub
+
+Remote: https://github.com/yugesh8718/ELECTRICITY-TARIFF
+
+```bash
+git add -A
+git commit -m "feat: your changes"
+git push origin master
+```
+
+---
+
+## 10. Demo mode behavior
+
+When `.env` has placeholder values or is missing:
+- Calculator and all five analytical features work fully using sample demo plans.
+- Sign-in shows "Firebase not connected" — no error, no crash.
+- Comparison PDF and Print still work.
+- No network requests are made to Firebase.
+
+---
+
+## 11. Tariff data limitations
+
+All tariff rates in `src/data/indiaBoards.ts` are **illustrative demo values** with `verificationStatus: 'demo'`. They are clearly labelled in the UI. To add verified official rates:
+
+1. Obtain the official tariff order PDF from the relevant SERC website.
+2. Update `src/data/indiaBoards.ts` with the verified rate.
+3. Change `verificationStatus` to `'verified'` and add the `sourceUrl` and `effectiveDate`.
+
+---
+
+## 12. Common errors and fixes
+
+| Error | Fix |
+|---|---|
+| `npm : cannot be loaded` (PowerShell) | Run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` as Administrator |
+| `npm error Missing script: "dev"` | You are in the wrong folder. Run `cd electricity-tariff-comparator` first |
+| Firebase welcome page after deploy | `firebase.json` must have `"public": "dist"`, not `"public": "public"` |
+| Google popup blocked | Browser is blocking popups — allow popups for localhost in browser settings |
+| `auth/unauthorized-domain` | Add your domain to Firebase Console → Authentication → Authorized domains |
+| `auth/operation-not-allowed` | Enable Google/Phone provider in Firebase Console → Authentication |
+
+---
+
+## Project report summary
+
+- **Status:** Functional demo with all five original features implemented and tested
+- **Tests:** 287/287 passing
+- **Build:** Succeeds (chunk-size advisory only, not an error)
+- **Deployment:** Firebase Hosting configured (`firebase.json` → `"public": "dist"`)
+- **GitHub:** https://github.com/yugesh8718/ELECTRICITY-TARIFF (master branch)
+- **Live URL:** Deploy with `firebase deploy --only hosting` to get a live `.web.app` URL
+
+---
+
+*WattWise — Academic project. All demo rates are fictional and not for actual billing.*

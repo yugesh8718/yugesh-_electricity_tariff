@@ -20,6 +20,8 @@ import { useNotification } from '../contexts/NotificationContext';
 import { isConfigured } from '../firebase/config';
 import SavingsCard from '../components/SavingsCard';
 import BillBreakdownTable from '../components/BillBreakdownTable';
+import ComparisonTable from '../components/ComparisonTable';
+import ComparisonExportActions from '../components/ComparisonExportActions';
 import type { ConsumptionInput, TariffPlan, ComparisonResult, BillBreakdown } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -250,6 +252,10 @@ export default function ComparisonPage() {
           })}
         </div>
       </section>
+
+      {/* ── Comparison table + Export actions ──────────────────────────── */}
+      <ComparisonTable result={result} />
+      <ComparisonExportActions result={result} />
 
       {/* ── Navigation links ────────────────────────────────────────────── */}
       <nav

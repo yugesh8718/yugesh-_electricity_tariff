@@ -40,7 +40,7 @@ function friendlyAuthError(error: unknown): string {
   const code = (error as { code?: string })?.code ?? '';
   switch (code) {
     case 'auth/operation-not-allowed':
-      return 'Google sign-in is not enabled for this project. Please contact support.';
+      return 'Google sign-in is not enabled for this project. Enable it in Firebase Console → Authentication → Sign-in method → Google → Enable → Save.';
     case 'auth/unauthorized-domain':
       return 'This domain is not authorised in Firebase. Add it under Authentication → Settings → Authorised domains.';
     case 'auth/popup-blocked':
@@ -57,7 +57,18 @@ function friendlyAuthError(error: unknown): string {
       return 'Firebase configuration was not found. Please verify your project settings.';
     case 'auth/account-exists-with-different-credential':
       return 'An account already exists with a different sign-in method. Please use the original sign-in method.';
+    case 'auth/quota-exceeded':
+      return 'Authentication quota exceeded. Please try again later.';
+    case 'auth/billing-not-enabled':
+      return 'Billing is not enabled for this Firebase project. Link a billing account in Firebase Console → Project settings → Billing.';
+    case 'auth/too-many-requests':
+      return 'Too many sign-in attempts. Please wait a few minutes before trying again.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled. Please contact support.';
     default:
+      if (import.meta.env.DEV) {
+        console.error('[Auth] Firebase error code:', code, error);
+      }
       return (error as { message?: string })?.message ?? 'Authentication failed. Please try again.';
   }
 }

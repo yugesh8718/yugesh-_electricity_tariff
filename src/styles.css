@@ -1239,3 +1239,212 @@ input:disabled, select:disabled { background: var(--color-neutral-100); cursor: 
   color: #065f46;
   font-size: 1.05rem;
 }
+
+/* =========================================================================
+   Comparison Table & Export Actions — added for PDF/Print feature
+   Appended only — no existing rules modified.
+   ========================================================================= */
+
+/* ── Export action buttons row ─────────────────────────────────────────────── */
+.comparison-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+  margin: var(--spacing-5, 20px) 0;
+}
+
+.comparison-export-btn {
+  min-width: 200px;
+}
+
+.comparison-export-status {
+  width: 100%;
+  font-size: 0.88rem;
+  color: var(--color-accent, #16a34a);
+  min-height: 1.2em;
+}
+
+.comparison-export-error {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* ── Comparison table section ──────────────────────────────────────────────── */
+.comparison-export-section {
+  margin-top: var(--spacing-6, 24px);
+}
+
+.comparison-table-title {
+  margin-bottom: var(--spacing-4, 16px);
+  font-size: 1.15rem;
+}
+
+.comparison-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 10px 12px;
+  text-align: right;
+  border-bottom: 1px solid var(--color-neutral-200, #e2e8f0);
+  vertical-align: middle;
+}
+
+.comparison-table-component-header,
+.comparison-table-label {
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-neutral-700, #334155);
+}
+
+.comparison-table th.comparison-table-plan-header {
+  background: var(--color-neutral-100, #f1f5f9);
+  font-weight: 700;
+  text-align: center;
+}
+
+.comparison-table th.comparison-table-winner-header {
+  background: var(--color-accent-light, #f0fdf4);
+  color: var(--color-accent, #16a34a);
+}
+
+.comparison-table-winner-badge {
+  display: block;
+  margin: 4px auto 0;
+  width: fit-content;
+}
+
+.comparison-table-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.comparison-table-winner-col {
+  background: rgba(22, 163, 74, 0.05);
+  font-weight: 600;
+}
+
+.comparison-table-total-row td {
+  font-weight: 700;
+  font-size: 1rem;
+  border-top: 2px solid var(--color-neutral-400, #94a3b8);
+  border-bottom: 2px solid var(--color-neutral-400, #94a3b8);
+  background: var(--color-neutral-50, #f8fafc);
+}
+
+.comparison-table tfoot tr {
+  background: var(--color-accent-light, #f0fdf4);
+}
+
+.comparison-table-savings-row td {
+  font-weight: 700;
+  color: var(--color-accent, #16a34a);
+  border-bottom: none;
+}
+
+.comparison-table-annual-note {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--color-neutral-600, #475569);
+}
+
+.comparison-table-winner-note {
+  margin-top: var(--spacing-3, 12px);
+  font-size: 0.9rem;
+  color: var(--color-neutral-700, #334155);
+  background: var(--color-accent-light, #f0fdf4);
+  border-left: 4px solid var(--color-accent, #16a34a);
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+  border-radius: 0 var(--radius-sm, 4px) var(--radius-sm, 4px) 0;
+}
+
+/* ── Print stylesheet ──────────────────────────────────────────────────────── */
+@media print {
+  /* Hide all chrome */
+  .topbar,
+  .footer,
+  .nav-toggle,
+  .btn,
+  .auth-panel,
+  .notice,
+  .comparison-export-actions,
+  .page-header .btn,
+  nav[aria-label="Deep-dive analysis"],
+  .ww-card .chart-container,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  /* Reset layout for print */
+  body,
+  .app-shell,
+  .main-content,
+  .page {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4 portrait;
+    margin: 16mm 14mm;
+  }
+
+  /* Panels become simple bordered boxes */
+  .panel {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 12pt !important;
+  }
+
+  /* Tables */
+  .comparison-table,
+  .breakdown-table {
+    width: 100% !important;
+    font-size: 9pt !important;
+    page-break-inside: auto;
+  }
+
+  .comparison-table thead,
+  .breakdown-table thead {
+    display: table-header-group;
+  }
+
+  .comparison-table tr,
+  .breakdown-table tr {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure winner highlight visible in B&W */
+  .comparison-table-winner-header,
+  .comparison-table-winner-col {
+    border: 2px solid black !important;
+  }
+
+  .badge-winner,
+  .comparison-card--winner {
+    border: 2px solid black !important;
+    font-weight: bold !important;
+  }
+
+  /* Show full href for links */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 8pt;
+    color: #555;
+  }
+}
